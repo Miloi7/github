@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#05070a">
+  <meta name="description" content="DJI Osmo Action 4 交互式 3D 拆解可视化 — 点击部件查看结构、规格与拆解动画。">
+  <title>DJI Osmo Action 4 · 3D Teardown</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <div class="ambient" aria-hidden="true">
+      <div class="ambient__glow ambient__glow--cyan"></div>
+      <div class="ambient__glow ambient__glow--amber"></div>
+      <div class="ambient__grid"></div>
+      <div class="ambient__horizon"></div>
+    </div>
+
+    <canvas id="scene-canvas" class="scene-canvas" aria-label="DJI Osmo Action 4 可交互三维拆解模型"></canvas>
+
+    <div class="screen-fx" aria-hidden="true">
+      <div class="screen-fx__scanlines"></div>
+      <div class="screen-fx__vignette"></div>
+      <div class="screen-fx__noise"></div>
+      <div class="screen-fx__frame"></div>
+    </div>
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand__dji" aria-label="DJI">DJI</div>
+        <div class="brand__rule"></div>
+        <div class="brand__copy">
+          <span class="eyebrow">INTERACTIVE TEARDOWN / 01</span>
+          <h1>OSMO ACTION <span>4</span></h1>
+        </div>
+      </div>
+      <div class="topbar__meta">
+        <div class="telemetry">
+          <div class="telemetry__item">
+            <span class="telemetry__label">MODE</span>
+            <strong class="telemetry__value" id="modeValue">OVERVIEW</strong>
+          </div>
+          <div class="telemetry__item">
+            <span class="telemetry__label">EXPLODED</span>
+            <strong class="telemetry__value" id="explodeValue">00 / 10</strong>
+          </div>
+          <div class="telemetry__item">
+            <span class="telemetry__label">FPS</span>
+            <strong class="telemetry__value" id="fpsValue">60</strong>
+          </div>
+        </div>
+        <div class="system-state"><span class="system-state__dot"></span><span>SYSTEM ONLINE</span></div>
+      </div>
+    </header>
+
+    <aside class="panel parts-panel" id="partsPanel" aria-label="部件清单">
+      <div class="panel__head">
+        <div>
+          <span class="panel__kicker">COMPONENT INDEX</span>
+          <h2 class="panel__title">部件清单</h2>
+        </div>
+        <div class="panel__count"><span id="partCount">10</span><small>PCS</small></div>
+      </div>
+      <div class="parts-list" id="partsList" role="list"></div>
+      <div class="panel__foot">
+        <span class="panel__foot-dot"></span>
+        <span>点击部件 · 聚焦拆解</span>
+        <span class="panel__foot-line"></span>
+      </div>
+    </aside>
+
+    <aside class="panel detail-panel" id="detailPanel" aria-label="部件详情">
+      <div class="panel__head detail-panel__head">
+        <div>
+          <span class="panel__kicker">COMPONENT DETAIL</span>
+          <h2 class="panel__title">部件详情</h2>
+        </div>
+        <button class="icon-button" id="btnCloseDetail" type="button" title="返回整机概览" aria-label="返回整机概览">
+          <span aria-hidden="true">↺</span>
+        </button>
+      </div>
+      <div class="detail-scroll" id="detailBody"></div>
+      <div class="detail-panel__foot">
+        <span id="detailFootLeft">SYSTEM READY</span>
+        <span id="detailFootRight">OA4 / 2023</span>
+      </div>
+    </aside>
+
+    <div class="label-layer" id="labelLayer" aria-hidden="true"></div>
+
+    <div class="hover-chip" id="hoverChip" role="status"></div>
+
+    <div class="guide-card" id="guideCard">
+      <div class="guide-card__head">
+        <span class="guide-card__pulse"></span>
+        <span>操作引导</span>
+        <button class="guide-card__close" id="btnDismissGuide" type="button" aria-label="收起操作引导">×</button>
+      </div>
+      <div class="guide-card__row"><kbd>拖拽</kbd><span>自由旋转视角</span></div>
+      <div class="guide-card__row"><kbd>滚轮</kbd><span>缩放查看细节</span></div>
+      <div class="guide-card__row"><kbd>点击</kbd><span>拆解部件 / 查看参数</span></div>
+    </div>
+
+    <div class="selection-readout" id="selectionReadout" aria-hidden="true">
+      <span class="selection-readout__line"></span>
+      <span class="selection-readout__label">TARGET</span>
+      <strong id="targetReadout">STANDBY</strong>
+      <span class="selection-readout__coord" id="coordReadout">X 00.00 / Y 00.00 / Z 00.00</span>
+    </div>
+
+    <div class="dock" id="dock" aria-label="场景控制">
+      <button class="dock-button dock-button--primary" id="btnExplodeAll" type="button">
+        <span class="dock-button__icon" aria-hidden="true">✦</span>
+        <span class="dock-button__text" id="btnExplodeLabel">全部拆解</span>
+        <kbd>E</kbd>
+      </button>
+      <span class="dock__divider"></span>
+      <button class="dock-button" id="btnResetView" type="button" title="重置相机视角">
+        <span class="dock-button__icon" aria-hidden="true">⌖</span>
+        <span class="dock-button__text">重置视角</span>
+        <kbd>R</kbd>
+      </button>
+      <button class="dock-button" id="btnAutoRotate" type="button" title="开启或关闭自动旋转">
+        <span class="dock-button__icon" aria-hidden="true">↻</span>
+        <span class="dock-button__text">自动旋转</span>
+        <kbd>A</kbd>
+      </button>
+      <button class="dock-button dock-button--active" id="btnLabels" type="button" title="显示或隐藏部件标注">
+        <span class="dock-button__icon" aria-hidden="true">⌑</span>
+        <span class="dock-button__text">部件标注</span>
+        <kbd>L</kbd>
+      </button>
+      <span class="dock__divider"></span>
+      <button class="dock-button dock-button--ghost" id="btnHelp" type="button" title="打开操作帮助">
+        <span class="dock-button__icon" aria-hidden="true">?</span>
+        <span class="dock-button__text">帮助</span>
+      </button>
+    </div>
+
+    <div class="coordinate" aria-hidden="true">
+      <span>22.5431° N</span><span>114.0579° E</span><span>SHENZHEN / CN</span>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <div class="loader" id="loader">
+      <div class="loader__inner">
+        <div class="loader__brand">DJI</div>
+        <div class="loader__title">OSMO ACTION <span>4</span></div>
+        <div class="loader__subtitle">INTERACTIVE TEARDOWN EXPERIENCE</div>
+        <div class="loader__orb" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="loader__bar"><span id="loaderBar"></span></div>
+        <div class="loader__row">
+          <span id="loaderText">INITIALIZING OPTICAL MODULE</span>
+          <span id="loaderPercent">00%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="helpModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <div class="modal__card">
+        <button class="modal__close" id="btnCloseHelp" type="button" aria-label="关闭帮助">×</button>
+        <span class="eyebrow">FIELD MANUAL / 使用说明</span>
+        <h2 id="helpTitle">拆解一台 Action 4</h2>
+        <p class="modal__intro">这是一个完全由代码生成的可交互 3D 模型。没有外部模型文件，每个部件都可以被单独选中、拆解与检查。</p>
+        <div class="modal__steps">
+          <div class="modal__step">
+            <span>01</span>
+            <div><strong>自由观察</strong><p>拖拽旋转视角，滚轮缩放；右上角显示实时帧率与拆解计数。</p></div>
+          </div>
+          <div class="modal__step">
+            <span>02</span>
+            <div><strong>点击拆解</strong><p>点击模型部件或左侧清单，查看爆炸位移、发光高亮与部件参数。</p></div>
+          </div>
+          <div class="modal__step">
+            <span>03</span>
+            <div><strong>全局总览</strong><p>使用“全部拆解”展开整机结构；按 E / R / A / L 可快速调用对应功能。</p></div>
+          </div>
+        </div>
+        <button class="modal__cta" id="btnStartExploring" type="button"><span>进入拆解模式</span><span aria-hidden="true">↗</span></button>
+        <p class="modal__hint">提示：点击空白处返回整机概览，按 ESC 关闭弹窗。</p>
+      </div>
+    </div>
+
+    <noscript>
+      <div class="noscript">请启用 JavaScript 以查看 DJI Osmo Action 4 的 3D 拆解体验。</div>
+    </noscript>
+  </div>
+
+  <script src="js/app.bundle.js" defer></script>
+</body>
+</html>

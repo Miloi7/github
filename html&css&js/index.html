@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>前端速查大全 · 速查台 REFBENCH</title>
+<meta name="description" content="HTML / CSS / JavaScript 三套速查合成一个离线索引，1274 条属性、标签与 API。">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='20' height='20' rx='5' fill='%230A0B0D' stroke='%2335E0A1' stroke-width='1.25'/%3E%3Crect x='6' y='7' width='12' height='1.5' rx='.75' fill='%23FF8461'/%3E%3Crect x='6' y='11.25' width='9' height='1.5' rx='.75' fill='%238AA6FF'/%3E%3Crect x='6' y='15.5' width='6' height='1.5' rx='.75' fill='%23F5C74E'/%3E%3C/svg%3E">
+<script>
+(function () {
+  try {
+    var mode = localStorage.getItem('rb-theme') || 'system';
+    var light = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    var theme = mode === 'light' ? 'light' : mode === 'dark' ? 'dark' : (light ? 'light' : 'dark');
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-theme-mode', mode);
+  } catch (err) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+})();
+</script>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<!-- 图标精灵：19 个界面图标 + 18 个分类图标，全部内联 -->
+<svg class="rb-sprite" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.3 10.3 14 14"/></symbol>
+    <symbol id="i-close" viewBox="0 0 16 16"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 16 16"><path d="M10 4 6 8l4 4"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 16 16"><path d="M13 8H3M7 4 3 8l4 4"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 16 16"><path d="M8 14V2M4 6l4-4 4 4"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 16 16"><path d="M12 4H6M12 4v6M12 4 4 12"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 16 16"><rect x="5" y="5" width="8" height="8" rx="1.5"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 5"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M12.6 3.4l-1.4 1.4M4.8 11.2l-1.4 1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7z"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="8" rx="1.5"/><path d="M6 14h4M8 11v3"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 16 16"><path d="M2.5 3.5h11L9.5 8.5v4l-3 1.5v-5.5z"/></symbol>
+    <symbol id="i-sort" viewBox="0 0 16 16"><path d="M5 3v10M2.5 10.5 5 13l2.5-2.5M11 13V3M8.5 5.5 11 3l2.5 2.5"/></symbol>
+    <symbol id="i-rows" viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="4.5" height="4.5"/><rect x="9" y="2.5" width="4.5" height="4.5"/><rect x="2.5" y="9" width="4.5" height="4.5"/><rect x="9" y="9" width="4.5" height="4.5"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 16 16"><rect x="1.5" y="4.5" width="13" height="8" rx="1.5"/><path d="M4 7h.01M6.5 7h.01M9 7h.01M11.5 7h.01M5 10h6"/></symbol>
+    <symbol id="i-bookmark-rail" viewBox="0 0 16 16"><path d="M4 2.5h8v11l-4-2.5-4 2.5z"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 0 1.5-3.6M3 2.5V6h3.5"/></symbol>
+    <symbol id="i-code" viewBox="0 0 16 16"><path d="M5.5 4 2 8l3.5 4M10.5 4 14 8l-3.5 4"/></symbol>
+    <symbol id="i-layout" viewBox="0 0 16 16"><rect x="2" y="2.5" width="12" height="11" rx="1.5"/><path d="M2 6.5h12M6 6.5v7"/></symbol>
+    <symbol id="i-box" viewBox="0 0 16 16"><path d="M8 2l5 2.5v7L8 14l-5-2.5v-7z"/><path d="M3 4.5 8 7l5-2.5M8 7v7"/></symbol>
+    <symbol id="i-type" viewBox="0 0 16 16"><path d="M3 13 8 3l5 10M5 9h6"/></symbol>
+    <symbol id="i-palette" viewBox="0 0 16 16"><path d="M8 14a6 6 0 1 1 6-6c0 2-1.5 2.5-3 2.5h-1.5A1.5 1.5 0 0 0 8 12a2 2 0 0 0 2 2z"/><path d="M5.5 6h.01M8 4.5h.01M10.8 6h.01"/></symbol>
+    <symbol id="i-square" viewBox="0 0 16 16"><rect x="3" y="3" width="10" height="10" rx="3"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 16 16"><path d="M8 2l1.2 3.8L13 7l-3.8 1.2L8 12l-1.2-3.8L3 7l3.8-1.2z"/><path d="M12.5 11.5l.5 1.5 1.5.5-1.5.5-.5 1.5-.5-1.5-1.5-.5 1.5-.5z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 16 16"><path d="M5 3l8 5-8 5z"/></symbol>
+    <symbol id="i-move" viewBox="0 0 16 16"><path d="M8 2v12M2 8h12M8 2 6 4M8 2l2 2M8 14l-2-2M8 14l2-2M2 8l2-2M2 8l2 2M14 8l-2-2M14 8l-2 2"/></symbol>
+    <symbol id="i-list" viewBox="0 0 16 16"><path d="M2 3.5h2M6 3.5h8M2 8h2M6 8h8M2 12.5h2M6 12.5h8"/></symbol>
+    <symbol id="i-scroll" viewBox="0 0 16 16"><rect x="4" y="2.5" width="8" height="11" rx="1.5"/><path d="M7 5h2M7 8h2M7 11h2"/></symbol>
+    <symbol id="i-columns" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M8 3v10"/></symbol>
+    <symbol id="i-mask" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 2.5v11"/></symbol>
+    <symbol id="i-cursor" viewBox="0 0 16 16"><path d="M3 2l9 5-4 1-1.5 4z"/></symbol>
+    <symbol id="i-svg" viewBox="0 0 16 16"><path d="M2 11c2-6 10-6 12 0"/><circle cx="2" cy="11" r="1"/><circle cx="14" cy="11" r="1"/></symbol>
+    <symbol id="i-extension" viewBox="0 0 16 16"><path d="M3 6V4.5A1.5 1.5 0 0 1 4.5 3H6a1.5 1.5 0 1 1 0 3h-.5v3H8a1.5 1.5 0 1 1 3 0v.5h1.5A1.5 1.5 0 0 1 14 11v1.5a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 3 12.5V11a1.5 1.5 0 1 1 0-3z"/></symbol>
+    <symbol id="i-more" viewBox="0 0 16 16"><path d="M3 8h.01M8 8h.01M13 8h.01" stroke-width="2.5"/></symbol>
+  </defs>
+</svg>
+
+<a class="rb-skip" href="#main">跳到主内容</a>
+<noscript><p class="rb-noscript">前端速查大全需要 JavaScript 才能加载本地索引。请在浏览器设置中允许脚本后刷新页面。</p></noscript>
+
+<header class="rb-topbar" id="topbar">
+  <a class="rb-brand" href="#/" aria-label="回到首页 速查台">
+    <span class="rb-brand__logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false">
+        <rect x="2" y="2" width="20" height="20" rx="5" stroke-width="1.25"/>
+        <rect class="rail rail--html" x="6" y="7" width="12" height="1.5" rx=".75" stroke="none"/>
+        <rect class="rail rail--css" x="6" y="11.25" width="9" height="1.5" rx=".75" stroke="none"/>
+        <rect class="rail rail--js" x="6" y="15.5" width="6" height="1.5" rx=".75" stroke="none"/>
+        <rect x="17.25" y="7" width="1.5" height="1.5" fill="currentColor" stroke="none"/>
+        <rect x="13.5" y="11.25" width="1.5" height="1.5" fill="currentColor" stroke="none"/>
+        <rect x="10.5" y="15.5" width="1.5" height="1.5" fill="currentColor" stroke="none"/>
+      </svg>
+    </span>
+    <span class="rb-brand__name">速查台</span>
+    <span class="rb-brand__en">REFBENCH</span>
+    <span class="rb-brand__count"><span data-total>—</span></span>
+  </a>
+
+  <div class="rb-topbar__search">
+    <div class="rb-search" data-search-host="top">
+      <svg class="rb-search__icon" aria-hidden="true" focusable="false"><use href="#i-search"></use></svg>
+      <input id="search-top" class="rb-search__input" type="search" data-search-input="top"
+        placeholder="搜索 1274 条 · Ctrl K" autocomplete="off" spellcheck="false" inputmode="search"
+        role="combobox" aria-expanded="false" aria-controls="suggest" aria-autocomplete="list" aria-label="搜索条目">
+      <span class="rb-search__tail">
+        <kbd class="rb-kbd" data-kbd>Ctrl K</kbd>
+        <button class="rb-search__clear" type="button" data-act="clear-search" aria-label="清除搜索" hidden>
+          <svg aria-hidden="true" focusable="false"><use href="#i-close"></use></svg>
+        </button>
+      </span>
+    </div>
+  </div>
+
+  <div class="rb-topbar__actions">
+    <button class="rb-iconbtn rb-topbar__searchbtn" type="button" data-act="open-msearch" aria-label="打开搜索">
+      <svg aria-hidden="true" focusable="false"><use href="#i-search"></use></svg>
+    </button>
+    <button class="rb-iconbtn" id="theme-btn" type="button" data-act="theme" aria-label="主题：跟随系统（点击切换）" title="主题：跟随系统">
+      <svg aria-hidden="true" focusable="false"><use href="#i-monitor"></use></svg>
+    </button>
+    <button class="rb-iconbtn rb-topbar__help" type="button" data-act="help" aria-label="键盘操作（?）" title="键盘操作">
+      <svg aria-hidden="true" focusable="false"><use href="#i-keyboard"></use></svg>
+    </button>
+    <button class="rb-iconbtn" type="button" data-pop="data" aria-haspopup="dialog" aria-expanded="false" aria-label="数据说明" title="数据说明">
+      <svg aria-hidden="true" focusable="false"><use href="#i-more"></use></svg>
+    </button>
+  </div>
+</header>
+
+<div class="rb-suggest" id="suggest" aria-label="搜索建议" hidden></div>
+
+<main id="main" tabindex="-1">
+  <div id="view" class="rb-view">
+    <div class="rb-browse">
+      <div class="rb-toolbar">
+        <div class="rb-tabs" role="tablist" aria-label="语种">
+          <span class="rb-tab is-active" aria-hidden="true">全部</span>
+          <span class="rb-tab" aria-hidden="true">HTML</span>
+          <span class="rb-tab" aria-hidden="true">CSS</span>
+          <span class="rb-tab" aria-hidden="true">JS</span>
+        </div>
+      </div>
+      <div class="rb-listhead"><span class="rb-listhead__title">正在载入</span><span class="rb-listhead__count">—</span></div>
+      <div class="rb-skeleton" aria-hidden="true">
+        <div class="rb-skeleton__row"><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span></div>
+        <div class="rb-skeleton__row"><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span></div>
+        <div class="rb-skeleton__row"><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span></div>
+        <div class="rb-skeleton__row"><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span></div>
+        <div class="rb-skeleton__row"><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span></div>
+        <div class="rb-skeleton__row"><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span></div>
+        <div class="rb-skeleton__row"><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span></div>
+        <div class="rb-skeleton__row"><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span><span class="rb-skeleton__bar"></span></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="rb-footer" id="footer">
+  <div class="rb-footer__inner">
+    <span class="rb-footer__logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false">
+        <rect x="2" y="2" width="20" height="20" rx="5" stroke-width="1.25"/>
+        <rect class="rail" x="6" y="7" width="12" height="1.5" rx=".75" stroke="none"/>
+        <rect class="rail" x="6" y="11.25" width="9" height="1.5" rx=".75" stroke="none"/>
+        <rect class="rail" x="6" y="15.5" width="6" height="1.5" rx=".75" stroke="none"/>
+      </svg>
+    </span>
+    <span>数据来源 MDN / W3C · 完全离线 · <span data-total>—</span> 条 · 2026-11-13</span>
+    <span class="rb-footer__model">RB-1274 · HTML / CSS / JS</span>
+    <button class="rb-footer__top" type="button" data-act="to-top" aria-label="回到顶部">
+      回到顶部
+      <svg aria-hidden="true" focusable="false"><use href="#i-arrow-up"></use></svg>
+    </button>
+  </div>
+</footer>
+
+<div class="rb-scrim" id="scrim" hidden></div>
+<aside class="rb-drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-label="条目详情" hidden></aside>
+<div class="rb-sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden></div>
+<div class="rb-modal" id="help" hidden></div>
+
+<div class="rb-msearch" id="msearch" role="dialog" aria-modal="true" aria-label="全屏搜索" hidden>
+  <div class="rb-msearch__bar">
+    <button class="rb-iconbtn" type="button" data-act="close-msearch" aria-label="关闭搜索">
+      <svg aria-hidden="true" focusable="false"><use href="#i-arrow-left"></use></svg>
+    </button>
+    <div class="rb-search rb-search--mobile" data-search-host="mobile">
+      <svg class="rb-search__icon" aria-hidden="true" focusable="false"><use href="#i-search"></use></svg>
+      <input id="search-mobile" class="rb-search__input" type="search" data-search-input="mobile"
+        placeholder="搜索属性名 / 中文名 / 标签 / 关键字…" autocomplete="off" spellcheck="false" inputmode="search"
+        role="combobox" aria-expanded="false" aria-controls="suggest" aria-autocomplete="list" aria-label="搜索条目">
+      <span class="rb-search__tail">
+        <button class="rb-search__clear" type="button" data-act="clear-search" aria-label="清除搜索" hidden>
+          <svg aria-hidden="true" focusable="false"><use href="#i-close"></use></svg>
+        </button>
+      </span>
+    </div>
+  </div>
+  <p class="rb-msearch__hint">输入属性名 / 中文名 / 标签 / 关键字，输入即搜。</p>
+</div>
+
+<div class="rb-pop" id="popover" hidden></div>
+<div class="rb-toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+<p id="copyStatus" class="sr-only" role="status" aria-live="polite"></p>
+
+<button class="rb-totop" id="to-top" type="button" hidden tabindex="-1" aria-label="回到顶部">
+  <svg class="rb-totop__ring" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+    <circle cx="20" cy="20" r="18"></circle>
+    <circle class="rb-totop__prog" cx="20" cy="20" r="18"></circle>
+  </svg>
+  <svg class="rb-totop__arrow" aria-hidden="true" focusable="false"><use href="#i-arrow-up"></use></svg>
+</button>
+
+<!-- 数据：manifest 给分片顺序，meta 给分类；分片按顺序同步 push 到 window.CS_DATA -->
+<script defer src="data/manifest.js"></script>
+<script defer src="data/meta.js"></script>
+<script defer src="data/html-01.js"></script>
+<script defer src="data/html-02.js"></script>
+<script defer src="data/html-03.js"></script>
+<script defer src="data/css-01.js"></script>
+<script defer src="data/css-02.js"></script>
+<script defer src="data/css-03.js"></script>
+<script defer src="data/css-04.js"></script>
+<script defer src="data/css-05.js"></script>
+<script defer src="data/css-06.js"></script>
+<script defer src="data/css-07.js"></script>
+<script defer src="data/css-08.js"></script>
+<script defer src="data/css-09.js"></script>
+<script defer src="data/css-10.js"></script>
+<script defer src="data/js-01.js"></script>
+<script defer src="data/js-02.js"></script>
+<script defer src="data/js-03.js"></script>
+<script defer src="data/js-04.js"></script>
+<script defer src="data/js-05.js"></script>
+<script defer src="data/js-06.js"></script>
+<script defer src="data/js-07.js"></script>
+<script defer src="data/js-08.js"></script>
+
+<script defer src="js/data.js"></script>
+<script defer src="js/search.js"></script>
+<script defer src="js/highlight.js"></script>
+<script defer src="js/preview.js"></script>
+<script defer src="js/render.js"></script>
+<script defer src="js/router.js"></script>
+<script defer src="js/app.js"></script>
+</body>
+</html>

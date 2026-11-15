@@ -1,0 +1,252 @@
+/* ==========================================================================
+   REFBENCH · base.css
+   reset / 排版 / 焦点 / sr-only / 滚动条 / 偏好适配
+   ========================================================================== */
+
+*,*::before,*::after{box-sizing:border-box}
+
+html{
+  background:var(--bg-0);
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+  -webkit-tap-highlight-color:transparent;
+}
+
+body{
+  margin:0;
+  min-height:100dvh;
+  background:var(--bg-0);
+  color:var(--fg-1);
+  font-family:var(--font-sans);
+  font-size:var(--fs-13);
+  line-height:var(--lh-13);
+  font-weight:400;
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+h1,h2,h3,h4,h5,h6{
+  margin:0;
+  font-weight:600;
+  line-height:1.3;
+}
+
+p,dl,dd,figure,blockquote{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+dl,dd{margin:0}
+
+a{
+  color:inherit;
+  text-decoration:none;
+}
+
+button{
+  margin:0;
+  padding:0;
+  border:0;
+  background:none;
+  color:inherit;
+  font:inherit;
+  line-height:inherit;
+  text-align:inherit;
+  cursor:pointer;
+  -webkit-appearance:none;
+  appearance:none;
+}
+
+input,select,textarea{
+  margin:0;
+  font:inherit;
+  color:inherit;
+  background:none;
+  border:0;
+}
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration{
+  -webkit-appearance:none;
+  appearance:none;
+}
+
+input[type="search"]{
+  -webkit-appearance:textfield;
+  appearance:textfield;
+}
+
+svg{
+  display:block;
+  flex:none;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.5;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+img{max-width:100%;height:auto}
+
+kbd{font-family:var(--font-mono)}
+
+::selection{
+  background:var(--acc-solid);
+  color:var(--acc-ink);
+}
+
+/* ── 数字：等宽读数 ───────────────────────────────────────────── */
+.rb-num{
+  font-family:var(--font-mono);
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum" 1;
+}
+
+.rb-mono{font-family:var(--font-mono)}
+.rb-en{font-family:var(--font-mono);font-size:.94em}
+.rb-muted{color:var(--fg-3)}
+.rb-secondary{color:var(--fg-2)}
+
+/* ── 焦点：全站唯一写法 ──────────────────────────────────────── */
+:focus-visible{
+  outline:2px solid var(--acc);
+  outline-offset:2px;
+  border-radius:inherit;
+}
+
+/* 搜索框的焦点环由外层提供，避免双环 */
+.rb-search__input:focus,
+.rb-search__input:focus-visible{outline:none}
+
+.on-accent:focus-visible{
+  outline-color:var(--bg-0);
+  box-shadow:0 0 0 4px var(--acc);
+}
+
+/* ── 跳转链接 ────────────────────────────────────────────────── */
+.rb-skip{
+  position:fixed;
+  top:0;
+  left:var(--sp-7);
+  z-index:var(--z-skip);
+  padding:var(--sp-3) var(--sp-6);
+  background:var(--bg-float);
+  border:var(--bw-1) solid var(--line-3);
+  border-top:0;
+  border-radius:0 0 var(--r-4) var(--r-4);
+  box-shadow:var(--sh-2);
+  color:var(--fg-1);
+  font-size:var(--fs-13);
+  font-weight:500;
+  transform:translateY(-120%);
+  transition:transform var(--dur-3) var(--ease-out);
+}
+.rb-skip:focus-visible{
+  transform:translateY(0);
+  outline-offset:3px;
+}
+
+.rb-noscript{
+  margin:0;
+  padding:var(--sp-5) var(--pad-page);
+  background:var(--bg-2);
+  border-bottom:var(--bw-1) solid var(--line-2);
+  color:var(--fg-2);
+  font-size:var(--fs-13);
+}
+
+/* ── 屏幕阅读器专用 ──────────────────────────────────────────── */
+.sr-only{
+  position:absolute !important;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0 0 0 0);
+  clip-path:inset(50%);
+  white-space:nowrap;
+  border:0;
+}
+
+[hidden]{display:none !important}
+
+/* ── 微标签 / 通用文本 ───────────────────────────────────────── */
+.rb-micro{
+  font-family:var(--font-mono);
+  font-size:var(--fs-10);
+  line-height:var(--lh-10);
+  letter-spacing:var(--tr-1);
+  text-transform:uppercase;
+  color:var(--fg-3);
+  font-weight:500;
+}
+
+.rb-section-no{
+  font-family:var(--font-mono);
+  font-size:var(--fs-10);
+  line-height:var(--lh-10);
+  letter-spacing:var(--tr-1);
+  color:var(--fg-3);
+  font-weight:500;
+}
+
+.rb-sep{color:var(--fg-3);padding:0 var(--sp-3)}
+
+/* ── 滚动条：细、低对比、不抢焦点 ───────────────────────────── */
+*{
+  scrollbar-width:thin;
+  scrollbar-color:var(--line-3) transparent;
+}
+*::-webkit-scrollbar{width:10px;height:10px}
+*::-webkit-scrollbar-track{background:transparent}
+*::-webkit-scrollbar-thumb{
+  background:var(--line-3);
+  border:3px solid transparent;
+  border-radius:var(--r-full);
+  background-clip:content-box;
+}
+*::-webkit-scrollbar-thumb:hover{background:var(--fg-4);background-clip:content-box}
+*::-webkit-scrollbar-corner{background:transparent}
+
+/* ── 高对比偏好：加强边界，关闭 tint 底 ─────────────────────── */
+@media (prefers-contrast: more){
+  :root{
+    --line-1:var(--line-3);
+    --line-2:var(--line-3);
+    --fg-3:var(--fg-2);
+    --tint-acc:transparent;
+    --tint-exp:transparent;
+    --tint-html:transparent;
+    --tint-css:transparent;
+    --tint-js:transparent;
+  }
+}
+
+/* ── 减少动效：无位移、无循环、骨架静止 ─────────────────────── */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+
+/* ── 强制色（Windows 高对比） ────────────────────────────────── */
+@media (forced-colors: active){
+  *{forced-color-adjust:auto}
+  .rb-brand__logo,
+  .rb-sprite{forced-color-adjust:auto}
+  .rb-row,.rb-card,.rb-sidebar__item,.rb-tab,.rb-chip{
+    border-color:ButtonBorder;
+  }
+  .rb-row__dot,.rb-heat-dot{background:CanvasText}
+  .rb-preview__grid{background-image:none}
+}
+
+/* ── 打印：去掉交互外壳 ─────────────────────────────────────── */
+@media print{
+  .rb-topbar,.rb-toolbar,.rb-filterbar,.rb-sidebar,.rb-totop,.rb-scrim,.rb-drawer,.rb-toasts{display:none !important}
+  body{background:#fff;color:#000}
+  .rb-view{max-width:none}
+}

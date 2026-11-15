@@ -1,0 +1,106 @@
+/* ==========================================================================
+   REFBENCH · tokens.css
+   设计规格书 §2.9 的完整落地。只放变量与主题映射，不放组件选择器。
+   ========================================================================== */
+
+/* ── 01 字体与刻度 ─────────────────────────────────────────────── */
+:root{
+  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI Variable Text","Segoe UI",
+    "PingFang SC","Hiragino Sans GB","Microsoft YaHei UI","Microsoft YaHei","Noto Sans SC",
+    system-ui,sans-serif;
+  --font-mono:"Cascadia Mono","Cascadia Code","JetBrains Mono","SFMono-Regular",Consolas,
+    "Liberation Mono",Menlo,monospace;
+
+  --fs-10:10px; --lh-10:14px;
+  --fs-11:11px; --lh-11:16px;
+  --fs-12:12px; --lh-12:18px;
+  --fs-13:13px; --lh-13:20px;
+  --fs-14:14px; --lh-14:22px;
+  --fs-15:15px; --lh-15:26px;
+  --fs-17:17px; --lh-17:24px;
+  --fs-20:20px; --lh-20:28px;
+  --fs-34:34px; --lh-34:40px;
+  --fs-56:56px; --lh-56:56px;
+
+  --tr-1:.14em; --tr-2:.02em; --tr-3:-.01em; --tr-4:-.02em;
+
+  /* ── 02 间距 / 圆角 / 边框 ─────────────────────────────────── */
+  --sp-1:2px;  --sp-2:4px;  --sp-3:6px;  --sp-4:8px;  --sp-5:10px;
+  --sp-6:12px; --sp-7:16px; --sp-8:20px; --sp-9:24px; --sp-10:32px;
+  --sp-11:40px;--sp-12:48px;--sp-13:64px;--sp-14:80px;
+
+  --r-1:2px; --r-2:4px; --r-3:6px; --r-4:8px; --r-5:10px; --r-6:14px; --r-full:999px;
+  --bw-1:1px; --bw-2:2px; --bw-3:3px;
+
+  /* ── 03 尺寸 ───────────────────────────────────────────────── */
+  --h-topbar:56px; --h-toolbar:48px; --h-filterbar:40px; --h-tab:44px;
+  --h-row:44px;    --h-chip:28px;    --h-btn:32px;
+  --w-sidebar:272px; --w-drawer:720px; --w-content-max:1680px; --gutter:28px;
+  --pad-page:32px;
+
+  /* 扩展尺寸（组件层使用，不改变上面的规格值） */
+  --h-drawer-bar:52px;
+  --w-drawer-rail:40px;
+  --w-drawer-content:62ch;
+  --w-suggest:640px;
+  --h-suggest-row:44px;
+  --code-border:rgba(255,255,255,.06);
+  --code-bar:rgba(255,255,255,.035);
+  --filter-h:0px;
+  --tool-h:var(--h-toolbar);
+
+  /* ── 04 动效 ───────────────────────────────────────────────── */
+  --dur-1:80ms; --dur-2:120ms; --dur-3:180ms; --dur-4:240ms; --dur-5:320ms;
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --ease-in:cubic-bezier(.7,0,.84,0);
+  --ease-std:cubic-bezier(.2,0,0,1);
+  --ease-inout:cubic-bezier(.65,0,.35,1);
+
+  /* ── 05 层级 ───────────────────────────────────────────────── */
+  --z-base:0; --z-sticky:10; --z-sidebar:20; --z-topbar:30; --z-pop:40;
+  --z-scrim:50; --z-drawer:60; --z-toast:70; --z-skip:80;
+
+  /* ── 06 代码色（双主题共用） ───────────────────────────────── */
+  --code-bg:#12151A; --code-line:rgba(233,231,227,.06);
+  --tk-plain:#DDE1E6; --tk-comment:#7A8290; --tk-keyword:#C9A0FF;
+  --tk-string:#9EDB8B; --tk-number:#F2C46B; --tk-fn:#7FD7FF;
+  --tk-tag:#FF9B7A; --tk-attr:#F5C74E; --tk-sel:#35E0A1; --tk-punct:#8B929E;
+}
+
+/* ── 07 浅色（纸） ───────────────────────────────────────────── */
+[data-theme="light"]{
+  --bg-0:#FAFAF7; --bg-1:#FFFFFF; --bg-2:#FFFFFF; --bg-3:#F3F2ED; --bg-4:#E9E7E0;
+  --bg-float:#FFFFFF;
+  --line-1:#E7E5DE; --line-2:#D8D5CB; --line-3:#BEBAAE; --line-control:#8F8A80;
+  --fg-1:#14161A; --fg-2:#4C4E52; --fg-3:#66686D; --fg-4:#9A9C9F;
+  --acc:#076B4A; --acc-solid:#0B7A55; --acc-ink:#FFFFFF; --acc-dim:#3F9C77;
+  --c-html:#A83707; --c-css:#3A56D4; --c-js:#8A5A00;
+  --c-exp:#6D3FD1; --c-nonstd:#5A616B; --c-obs:#6D6F74;
+  --tint-html:#F3EAE4; --tint-css:#EBEDF4; --tint-js:#F1EDE3;
+  --tint-acc:#E2ECE6; --tint-exp:#F0EBFC; --tint-nonstd:#EDEEEC;
+  --mark-bg:#D4E6DD; --mark-fg:#04543A;
+  --scrim:rgba(20,22,26,.40);
+  --sh-1:0 1px 2px rgba(20,22,26,.06);
+  --sh-2:0 6px 20px rgba(20,22,26,.10);
+  --sh-3:0 24px 60px rgba(20,22,26,.16);
+  color-scheme:light;
+}
+
+/* ── 08 深色（石墨，默认） ──────────────────────────────────── */
+[data-theme="dark"]{
+  --bg-0:#0A0B0D; --bg-1:#101215; --bg-2:#15181C; --bg-3:#1C2025; --bg-4:#252A31;
+  --bg-float:#1D2127;
+  --line-1:#22252B; --line-2:#2C313A; --line-3:#3A414B; --line-control:#5A636F;
+  --fg-1:#E9E7E3; --fg-2:#A6A49F; --fg-3:#8C8B85; --fg-4:#5A5B5E;
+  --acc:#35E0A1; --acc-solid:#35E0A1; --acc-ink:#04140E; --acc-dim:#1F8F66;
+  --c-html:#FF8461; --c-css:#8AA6FF; --c-js:#F5C74E;
+  --c-exp:#BFA3FF; --c-nonstd:#9AA1AC; --c-obs:#8C8F95;
+  --tint-html:#312524; --tint-css:#232937; --tint-js:#302D22;
+  --tint-acc:#19342F; --tint-exp:#2D2B3C; --tint-nonstd:#22262A;
+  --mark-bg:#1B4037; --mark-fg:#DFFFEF;
+  --scrim:rgba(4,6,9,.62);
+  --sh-1:0 1px 2px rgba(0,0,0,.36);
+  --sh-2:0 10px 30px rgba(0,0,0,.44);
+  --sh-3:0 32px 80px rgba(0,0,0,.58);
+  color-scheme:dark;
+}

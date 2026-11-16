@@ -224,6 +224,9 @@ body.is-toolbar-hidden{
 
 @media (min-width:768px){
   .rb-cover{padding:var(--sp-11) 0 var(--sp-10)}
+  /* 桌面端顶栏常驻搜索框，封面不再重复第二个输入框 */
+  .rb-cover__search{display:none}
+  .rb-cover__chips{margin-top:var(--sp-8)}
 }
 
 /* 读数条 */

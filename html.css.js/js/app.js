@@ -468,6 +468,91 @@
     if (host) P.render(host, entry);
   }
 
+  /* ── 示例编辑 / 变体 ───────────────────────────────────────── */
+  var exampleTimer = null;
+  function currentExample() {
+    if (!state.drawer) return '';
+    var code = state.drawer.exampleCode;
+    return code == null ? (state.drawer.entry.example || '') : code;
+  }
+
+  function syncExampleBlock(code) {
+    if (!state.drawer) return;
+    var entry = state.drawer.entry;
+    var wrap = el.drawer.querySelector('[data-example]');
+    if (!wrap) return;
+    var codeEl = wrap.querySelector('[data-example-code] code');
+    var gutter = wrap.querySelector('[data-example-code] .rb-code__gutter');
+    var count = wrap.querySelector('[data-example-code] .rb-code__count');
+    var area = wrap.querySelector('[data-example-area]');
+    if (codeEl && global.CodeHL) codeEl.innerHTML = global.CodeHL.highlight(code, entry.lang);
+    if (gutter) {
+      var lines = String(code).split('\n').length;
+      var html = '';
+      for (var i = 1; i <= lines; i++) html += (i > 1 ? '<br>' : '') + i;
+      gutter.innerHTML = html;
+    }
+    if (count) count.textContent = String(code).length + ' 字符';
+    if (area && area.value !== code) area.value = code;
+    var status = wrap.querySelector('[data-example-status]');
+    if (status) status.textContent = code === (entry.example || '') ? '' : '已修改 · 仅本次预览';
+    wrap.classList.toggle('is-dirty', code !== (entry.example || ''));
+    syncCodeOverflow(el.drawer);
+  }
+
+  function applyExample(code, silent) {
+    if (!state.drawer) return;
+    code = String(code == null ? '' : code);
+    state.drawer.exampleCode = code;
+    var host = el.drawer.querySelector('[data-preview-host]');
+    if (host) P.renderCode(host, state.drawer.entry, code);
+    syncExampleBlock(code);
+    if (!silent) announce('已更新预览');
+  }
+
+  function toggleExampleEdit(force) {
+    if (!state.drawer) return;
+    var wrap = el.drawer.querySelector('[data-example]');
+    if (!wrap) return;
+    var editing = force == null ? !wrap.classList.contains('is-editing') : !!force;
+    var codeBox = wrap.querySelector('[data-example-code]');
+    var edit = wrap.querySelector('[data-example-edit]');
+    var area = wrap.querySelector('[data-example-area]');
+    var btn = wrap.querySelector('[data-act="example-edit"]');
+    var label = wrap.querySelector('[data-example-edit-label]');
+    wrap.classList.toggle('is-editing', editing);
+    if (codeBox) codeBox.hidden = editing;
+    if (edit) edit.hidden = !editing;
+    if (btn) btn.setAttribute('aria-pressed', editing ? 'true' : 'false');
+    if (label) label.textContent = editing ? '完成编辑' : '编辑示例';
+    if (editing) {
+      if (area) {
+        area.value = currentExample();
+        if (wrap.scrollIntoView) {
+          wrap.scrollIntoView({ block: 'start', behavior: reduceMotion ? 'auto' : 'smooth' });
+        }
+        area.focus({ preventScroll: true });
+        try { area.setSelectionRange(area.value.length, area.value.length); } catch (err) { /* ignore */ }
+      }
+    } else if (btn) {
+      btn.focus({ preventScroll: true });
+    }
+  }
+
+  function applyPreset(node) {
+    if (!state.drawer) return;
+    var index = parseInt(node.getAttribute('data-index'), 10) || 0;
+    var list = V.exampleVariants(state.drawer.entry);
+    if (!list[index]) return;
+    applyExample(list[index].code, true);
+    $$('[data-act="example-preset"]', el.drawer).forEach(function (chip) {
+      var on = chip === node;
+      chip.classList.toggle('is-on', on);
+      chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    announce('已载入示例变体：' + list[index].label);
+  }
+
   function openDrawer(entry, centerRow) {
     var inList = state.list && state.list.some(function (item) { return item.id === entry.id; });
     var ctxList = inList ? state.list : C.sortList(C.langEntries(entry.lang), 'recommended');
@@ -484,7 +569,7 @@
     if (!wasOpen && !state.drawerReturnFocus) {
       state.drawerReturnFocus = doc.activeElement && doc.activeElement !== doc.body ? doc.activeElement : null;
     }
-    state.drawer = { entry: entry, list: ctxList, index: index, closeHash: closeHash };
+    state.drawer = { entry: entry, list: ctxList, index: index, closeHash: closeHash, exampleCode: entry.example || '' };
     lastSectionTarget = null;
     el.drawer.innerHTML = V.renderDrawer(entry, { index: index, total: ctxList.length, q: state.q });
     el.drawer.setAttribute('aria-label', entry.name + ' 详情');
@@ -610,7 +695,7 @@
   function copyEntry(kind) {
     var entry = state.drawer && state.drawer.entry;
     if (!entry) return;
-    var text = kind === 'syntax' ? entry.syntax : entry.example;
+    var text = kind === 'syntax' ? entry.syntax : (kind === 'example' ? currentExample() : entry.example);
     if (!text) { toast('没有可复制的内容', 'warn'); return; }
     copyText(text).then(function (ok) {
       if (!ok) { toast('复制失败，请手动选择代码', 'error'); return; }
@@ -1384,6 +1469,30 @@
         if (state.drawer) renderPreview(state.drawer.entry);
         break;
       }
+      case 'example-edit':
+        toggleExampleEdit();
+        break;
+      case 'example-apply': {
+        var area = el.drawer.querySelector('[data-example-area]');
+        if (area) applyExample(area.value);
+        break;
+      }
+      case 'example-reset': {
+        if (!state.drawer) break;
+        var original = state.drawer.entry.example || '';
+        var editArea = el.drawer.querySelector('[data-example-area]');
+        if (editArea) editArea.value = original;
+        applyExample(original, true);
+        $$('[data-act="example-preset"]', el.drawer).forEach(function (chip) {
+          chip.classList.remove('is-on');
+          chip.setAttribute('aria-pressed', 'false');
+        });
+        announce('已恢复原示例');
+        break;
+      }
+      case 'example-preset':
+        applyPreset(node);
+        break;
       case 'preview-grid': {
         var grid = el.drawer.querySelector('[data-grid]');
         if (grid) {
@@ -1513,9 +1622,14 @@
 
     var suggestOption = target.closest('[data-url]');
     if (suggestOption && target.closest('#suggest')) {
+      var suggestUrl = suggestOption.getAttribute('data-url');
       rememberRecent((state.activeSearchInput && state.activeSearchInput.value.trim()) || state.q);
       closeSuggestions();
       if (state.mobileSearchOpen) closeMobileSearch(false);
+      /* 带修饰键时交给浏览器（新标签 / 新窗口打开） */
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      if (suggestUrl) R.go(suggestUrl);
       return;
     }
 
@@ -1540,7 +1654,16 @@
   /* ── 事件：输入 / 焦点 ───────────────────────────────────── */
   function onInput(event) {
     var input = event.target;
-    if (!input.matches || !input.matches('[data-search-input]')) return;
+    if (!input.matches) return;
+    if (input.matches('[data-example-area]')) {
+      global.clearTimeout(exampleTimer);
+      exampleTimer = global.setTimeout(function () {
+        if (!state.drawer) return;
+        applyExample(input.value, true);
+      }, 180);
+      return;
+    }
+    if (!input.matches('[data-search-input]')) return;
     syncSearchInputs(input.value);
     state.q = input.value.trim();
     global.clearTimeout(searchTimer);
@@ -1571,6 +1694,29 @@
     var key = event.key;
     var target = event.target;
     var drawerOpen = !!state.drawer;
+
+    /* 示例编辑器：Tab 缩进、Ctrl+Enter 运行、Esc 退出编辑 */
+    if (target && target.matches && target.matches('[data-example-area]')) {
+      if (key === 'Tab') {
+        event.preventDefault();
+        var pos = target.selectionStart;
+        target.value = target.value.slice(0, pos) + '  ' + target.value.slice(target.selectionEnd);
+        try { target.setSelectionRange(pos + 2, pos + 2); } catch (err) { /* ignore */ }
+        applyExample(target.value, true);
+        return;
+      }
+      if (key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        applyExample(target.value);
+        return;
+      }
+      if (key === 'Escape') {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleExampleEdit(false);
+        return;
+      }
+    }
 
     if (state.helpOpen) {
       if (key === 'Escape') { event.preventDefault(); closeHelp(); return; }

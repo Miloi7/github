@@ -549,7 +549,8 @@
         if (reason) zhMark = reason;
       }
       return '<a class="rb-suggest__row' + (on ? ' is-active' : '') + '" role="option" id="sug-' + index + '"' +
-        ' aria-selected="' + (on ? 'true' : 'false') + '" data-id="' + esc(entry.id) + '" data-url="' + C.urlFor(entry) + '"' +
+        ' aria-selected="' + (on ? 'true' : 'false') + '" href="' + esc(C.urlFor(entry)) + '"' +
+        ' data-id="' + esc(entry.id) + '" data-url="' + C.urlFor(entry) + '"' +
         ' data-lang="' + entry.lang + '">' +
         '<span class="rb-langmark" aria-hidden="true">' + esc(C.langMark[entry.lang]) + '</span>' +
         '<span class="rb-suggest__name" title="' + esc(entry.name) + '">' + nameMark + '</span>' +
@@ -758,6 +759,7 @@
       row(kbd('[') + kbd(']'), '上一条 / 下一条') +
       row(kbd('c'), '复制示例代码') +
       row(kbd('m'), '打开 MDN') +
+      row(kbd('Ctrl Enter'), '示例编辑态：运行预览') +
       row(kbd('Tab'), '焦点在抽屉内循环') +
       '</div></div>';
   }
@@ -778,6 +780,57 @@
       '<span class="rb-code__gutter" aria-hidden="true">' + gutter + '</span>' +
       '<pre class="rb-code__pre"><code>' + HL.highlight(code, lang) + '</code></pre>' +
       '</div></div><span class="rb-code__fade" aria-hidden="true"></span></div>';
+  }
+
+  /* 示例变体：CSS 用数据里的取值生成可切换片段；HTML/JS 暂不生成 */
+  function exampleVariants(entry) {
+    if (!entry || entry.lang !== 'css' || !entry.values || !entry.values.length) return [];
+    var seen = {};
+    var out = [];
+    entry.values.forEach(function (item) {
+      var v = String(item.v == null ? '' : item.v).trim();
+      if (!v || v.length > 40) return;
+      if (/[<>]/.test(v)) return;
+      if (!/^[#a-z0-9.,%()\s\/\-+*'|]+$/i.test(v)) return;
+      var key = v.toLowerCase();
+      if (seen[key]) return;
+      seen[key] = 1;
+      out.push({ label: v, code: '.demo {\n  ' + entry.name + ': ' + v + ';\n}' });
+    });
+    return out.slice(0, 6);
+  }
+
+  /* 示例区：可编辑 + 取值变体（CSS/HTML 可改，JS 保持只读） */
+  function exampleSection(entry) {
+    var variants = exampleVariants(entry);
+    var block = codeBlock(entry.example, entry.lang, 'example.' + ext(entry.lang), 'example',
+      'rb-code--example' + (entry.lang === 'js' ? ' rb-code--js' : ''), '复制示例代码');
+    if (entry.lang === 'js') return block;
+
+    var presets = variants.length
+      ? '<div class="rb-example__presets" role="group" aria-label="示例变体">' +
+        '<span class="rb-example__plabel">示例变体</span>' +
+        variants.map(function (v, i) {
+          return '<button class="rb-example__chip" type="button" data-act="example-preset" data-index="' + i +
+            '" title="' + esc(v.code) + '">' + esc(v.label) + '</button>';
+        }).join('') + '</div>'
+      : '';
+
+    return '<div class="rb-example" data-example>' +
+      '<div class="rb-example__toolbar">' + presets +
+      '<button class="rb-example__editbtn" type="button" data-act="example-edit" aria-pressed="false" aria-controls="rb-example-area">' +
+      icon('code') + '<span data-example-edit-label>编辑示例</span></button>' +
+      '</div>' +
+      '<div data-example-code>' + block + '</div>' +
+      '<div class="rb-example__edit" data-example-edit hidden>' +
+      '<label class="sr-only" for="rb-example-area">编辑示例代码</label>' +
+      '<textarea class="rb-example__area" id="rb-example-area" data-example-area spellcheck="false" ' +
+      'autocapitalize="off" autocomplete="off" wrap="off"></textarea>' +
+      '<div class="rb-example__actions">' +
+      '<button class="rb-btn rb-btn--primary" type="button" data-act="example-apply">运行</button>' +
+      '<button class="rb-btn" type="button" data-act="example-reset">恢复原示例</button>' +
+      '<span class="rb-example__status" data-example-status role="status"></span>' +
+      '</div></div></div>';
   }
 
   function valuesHTML(values) {
@@ -891,8 +944,7 @@
     if (entry.example && String(entry.example).trim()) {
       sections.push({
         title: '示例',
-        body: codeBlock(entry.example, entry.lang, 'example.' + ext(entry.lang), 'example',
-          'rb-code--example' + (entry.lang === 'js' ? ' rb-code--js' : ''), '复制示例代码')
+        body: exampleSection(entry)
       });
     }
 
@@ -1038,6 +1090,7 @@
     renderSheet: renderSheet,
     renderShortcuts: renderShortcuts,
     renderDrawer: renderDrawer,
+    exampleVariants: exampleVariants,
     filterbar: filterbar,
     filterChips: filterChips,
     listHead: listHead,

@@ -165,7 +165,7 @@
     return PRESET[entry.cat] || 'e';
   }
 
-  function render(host, entry) {
+  function renderWith(host, entry, code) {
     if (!host || !entry) return;
     var shadow = host.shadowRoot;
     if (!shadow) {
@@ -182,8 +182,10 @@
       return;
     }
 
+    var source = code == null ? entry.example : code;
+
     if (entry.lang === 'html') {
-      var clean = sanitizeHTML(entry.example || '');
+      var clean = sanitizeHTML(source || '');
       var htmlStage = '<div class="rb-stage rb-stage--html"><div class="rb-pv-content">' +
         (clean || '<span class="rb-pv-empty">示例为空</span>') +
         '</div></div>';
@@ -198,13 +200,18 @@
       return;
     }
 
-    var css = sanitizeCSS(entry.example || '');
+    var css = sanitizeCSS(source || '');
     var stage = STAGE[presetOf(entry)] || STAGE.e;
     shadow.innerHTML = '<style>' + BASE_CSS + '\n' + css + '</style>' + stage;
   }
 
+  function render(host, entry) {
+    renderWith(host, entry, entry.example);
+  }
+
   global.CSPreview = {
     render: render,
+    renderCode: renderWith,
     presetOf: presetOf,
     sanitizeCSS: sanitizeCSS,
     sanitizeHTML: sanitizeHTML,

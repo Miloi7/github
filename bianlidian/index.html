@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>雨夜の街角 — HOSHINO MART</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23082b35'/%3E%3Cpath d='M32 11l5.6 13.1L51 25.4l-9.6 9.3 2.3 13.6L32 42.3l-11.7 6 2.3-13.6L13 25.4l13.4-1.3L32 11z' fill='%236ff4ff'/%3E%3C/svg%3E" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --sky-deep: #05060b;
+      --sky-mid: #101528;
+      --sky-glow: #27304d;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: var(--sky-deep);
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    #stage {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 58% 48% at 55% 33%, rgba(95, 124, 194, 0.32) 0%, rgba(33, 44, 82, 0.14) 46%, rgba(8, 10, 20, 0) 76%),
+        radial-gradient(ellipse 32% 34% at 65% 51%, rgba(130, 69, 133, 0.12) 0%, rgba(8, 10, 20, 0) 76%),
+        radial-gradient(ellipse 80% 65% at 62% 36%, rgba(57, 76, 118, 0.46) 0%, rgba(22, 30, 55, 0.22) 38%, rgba(8, 10, 20, 0) 72%),
+        radial-gradient(ellipse 55% 45% at 48% 78%, rgba(122, 58, 98, 0.13) 0%, rgba(8, 10, 20, 0) 68%),
+        radial-gradient(circle at 50% 44%, var(--sky-mid) 0%, #090c18 45%, var(--sky-deep) 100%);
+    }
+    #stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse 72% 68% at 50% 48%, rgba(0, 0, 0, 0) 50%, rgba(2, 3, 8, 0.52) 100%);
+    }
+    #scene {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      outline: none;
+      opacity: 0;
+      animation: scene-in 1.8s cubic-bezier(0.22, 0.7, 0.25, 1) 0.1s forwards;
+    }
+    @keyframes scene-in {
+      from { opacity: 0; filter: saturate(0.72) contrast(0.92) brightness(0.72); }
+      to { opacity: 1; filter: saturate(1.1) contrast(1.01) brightness(1.08); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #scene { animation-duration: 0.01s; }
+    }
+  </style>
+</head>
+<body>
+  <main id="stage" aria-label="A collectible diorama of a Japanese convenience store on a rainy night">
+    <canvas id="scene" tabindex="0"></canvas>
+  </main>
+  <script src="./app.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,17 @@
+{
+  "name": "night-mart-diorama",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/main.js --bundle --format=iife --target=chrome100 --outfile=app.js",
+    "build:min": "esbuild src/main.js --bundle --format=iife --target=chrome100 --minify --outfile=app.js",
+    "watch": "esbuild src/main.js --bundle --format=iife --target=chrome100 --outfile=app.js --watch"
+  },
+  "dependencies": {
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}
